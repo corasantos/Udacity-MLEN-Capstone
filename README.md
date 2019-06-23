@@ -21,4 +21,4 @@ The data is provided [here].
 
 
 [here]: https://www.kaggle.com/c/nyc-taxi-trip-duration/data
-[NY City Taxi Trip Duration challenge.]: https://www.kaggle.com/c/nyc-taxi-trip-duration
+[NY City Taxi Trip Duration challenge]: https://www.kaggle.com/c/nyc-taxi-trip-duration
