@@ -281,8 +281,7 @@
     % Slightly bigger margins than the latex defaults
     
     \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
-    
-    
+     
 
     \begin{document}
     
@@ -291,7 +290,7 @@
     
     
 
- 
+
 
     \hypertarget{domain-background}{%
 \section{Domain Background}\label{domain-background}}
@@ -302,6 +301,12 @@ Taxi Duration Trip} competition from
 \href{https://en.wikipedia.org/wiki/Kaggle}{Kaggle}. The challenge is to
 build a model that predicts the total ride duration of taxi trips in New
 York City.
+
+Solving problems alike is not a new challenge
+{[}\href{https://www.aaai.org/Papers/KDD/1998/KDD98-037.pdf}{1},\href{https://ieeexplore.ieee.org/document/518845}{2}{]},
+however, it was not ultil recently that the amount of data has increased
+enough, and become more precise with the rise hightech smartphones and
+GPS use and real-time tracking, that solutions were made possible.
 
     \hypertarget{problem-statement}{%
 \subsubsection{2. Problem Statement}\label{problem-statement}}
@@ -329,9 +334,10 @@ The training set contains eleven features:
   \texttt{id} - a unique identifier for each trip
 \item
   \texttt{vendor\_id} - a code indicating the provider associated with
-  the trip record
+  the trip record, \emph{categorical}
 \item
-  \texttt{pickup\_datetime} - date and time when the meter was engaged
+  \texttt{pickup\_datetime} - date and time when the meter was engaged,
+  \emph{categorical}
 \item
   \texttt{dropoff\_datetime} - date and time when the meter was
   disengaged
@@ -393,10 +399,13 @@ minimization of the root mean square logarithm error (RMSLE), cross
 validation for detecting over and/or underfitting, and grid-search for
 fine tunning hyperparameters.
 
-    \hypertarget{benchmark-result}{%
-\section{Benchmark Result}\label{benchmark-result}}
+    \hypertarget{benchmark-model-and-result}{%
+\section{Benchmark Model and Result}\label{benchmark-model-and-result}}
 
-The benchmark result is the
+The benchmark model will be the raw linear regression as it is well
+known and simple.
+
+The benchmark result will be the
 \href{https://www.kaggle.com/c/nyc-taxi-trip-duration/leaderboard}{winning}
 score of the Kaggle's challenge when the winning team submitted the
 provided testing set. The challenge's metric is the RMSLE, and the
@@ -418,13 +427,14 @@ logarithm values of prediction (\(\hat{y}\)) and true values(\(y\)).
     \hypertarget{project-design}{%
 \section{Project Design}\label{project-design}}
 
-The project will be segregated in four major parts: data preprocessing, model selection, benchmark comparison and conclusion.
-
+The project will be segregated in four major parts: data preprocessing,
+model selection, benchmark comparison and conclusion.
 
 \hypertarget{data-preprocessing}{%
 \subsection{Data Preprocessing}\label{data-preprocessing}}
 
-Data preprocessing will be segregated into two sections: Generals and Specifics.
+Data preprocessing will be segregated into two sections: Generals and
+Specifics.
 
 \hypertarget{generals}{%
 \subsubsection{Generals}\label{generals}}
@@ -449,17 +459,33 @@ calculated.
 \hypertarget{specifics}{%
 \subsubsection{Specifics}\label{specifics}}
 
-In this section, the data will be explored statistically and visually,
-with the objective of understanding the features influences, detecting
-and dropping outliers and finding transformations that will make the
-training and prediction better, as rescalling or
-\emph{one-hot-encoding}, for example. This analysis will be divided in
-four subsections: Distance anaysis, Geo-localization analysis, Time
-related analysis and the remaining features analysis.
+In this section, the data will be deeply explored with the objective of
+understanding the features influences, finding transformations and
+detecting and dropping outliers in order to make the training and
+prediction better.
 
-For the analysis, the velocity will be calculated, \texttt{distance}
-over \texttt{trip\_duration} as the trip duration may depend on traffic,
-that depends greatly on date and time.
+\textbf{Continuous data} First step will look for skewness of the
+continuous data and propose transformations that will be Logarithmic or
+Box-Cox and, finally. A probability plot against a normal distribution
+will help the decision in which transformation to perform.
+
+Second step, take a good look at the data scatter plotting continuous
+features against each other and looking at their distributions to search
+for outliers, that will be studied further to decide wheter they should
+be dropped or not.
+
+Finally, the data will be normalized to the interval \([0,1]\).
+
+\textbf{Categorical data} The influence of categorical data will be
+studied separetely. First, datetime related will be segregated into
+\texttt{month}, \texttt{day}, \texttt{hour}, \texttt{day\ of\ the\ week}
+and binary variables that flag if it's a holiday or not, in orther to
+search for periodical/special behaviour.Second, the other categorical
+features such as \texttt{passenger\_count} and \texttt{vendor\_id}. They
+will be transform to dummy variables through \emph{one-hot-encoding}.
+For these analysis, the velocity, \texttt{distance} over
+\texttt{trip\_duration}, will be taken into account as the trip duration
+may depend on traffic, that depends greatly on date and time.
 
 \hypertarget{model-selection}{%
 \subsection{Model Selection}\label{model-selection}}
@@ -473,16 +499,38 @@ splitted into training and testing set for the model selection.
 \subsubsection{Initial Model
 Evaluation}\label{initial-model-evaluation}}
 
-For the initial model evaluation, a set of different kind regressors
-will be trained in different data set sizes, using cross validation, in
-order to verify underfitting and overfitting between regressors. No
-tunning of hyperparameters will be performed.
+For the initial model evaluation, a set of different regressors will be
+trained in different data set sizes, using cross validation, in order to
+verify underfitting and overfitting between regressors. No tunning of
+hyperparameters will be performed.
+
+As there will be a lot of dummy binary variables after the
+\emph{one-hot-encoding} transformation, ensemble methods will be a good
+option for the final model. In this step, will be trained:
+
+\begin{itemize}
+\tightlist
+\item
+  Simple Linear Regression (benchmark model)
+\item
+  Decision Trees
+\item
+  Rain Forest
+\item
+  Bagging
+\item
+  Gradient Boosting
+\item
+  Extreme Boosting
+\end{itemize}
 
 \hypertarget{model-tunning}{%
 \subsubsection{Model Tunning}\label{model-tunning}}
 
-The best model from the previous step will have its hyperparameters
-tunned through gridsearch in order to select the best hyperparameters.
+The best two models from the previous step will have their
+hyperparameters tunned through gridsearch. The results of the best set
+of parameters for each model will be compared and the final model
+decided.
 
 \hypertarget{final-validation}{%
 \subsubsection{Final Validation}\label{final-validation}}
@@ -497,8 +545,8 @@ Once the model has been selected and trained on the whole provided
 training set, the predictions over the provided testint set will be
 submitted to the private
 \href{https://www.kaggle.com/c/nyc-taxi-trip-duration/leaderboard}{leaderboard}
-on Kaggle. The result will be comparised with the bechmark, which is
-\texttt{0.28976}.
+on Kaggle. The result will be compared with the bechmark model, Linear
+Regression, and the benchmark result, which is \texttt{0.28976}.
 
 \hypertarget{conclusion}{%
 \subsection{Conclusion}\label{conclusion}}
